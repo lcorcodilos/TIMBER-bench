@@ -97,6 +97,6 @@ class BenchTIMBER(Bench):
         self.a.CalibrateVar(["FatJet_msoftdrop"],jmr,evalArgs={"jets":"FatJets","genJets":"GenJets"})
     
     def run_timber(self):
-        self.a.Snapshot(['nFatJet','FatJet_.*'],'TIMBER_'+self.tag+'.root',"Events")
+        self.a.Snapshot(['nFatJet','FatJet_.*'],'benchmark_out/TIMBER_'+self.tag+'.root',"Events")
         print ('Finished snapshot')
         
