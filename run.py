@@ -21,7 +21,9 @@ parser.add_argument('-t', '--tag', metavar='IN',
 parser.add_argument('-c', '--cut', metavar='IN', 
                     dest='cut', default='',
                     help='Cut string to apply (must be simple enough to pass both framworks)')
-
+parser.add_argument('--kad', metavar='IN', 
+                    dest='kad', default='',
+                    help='"Keep and drop" file for NanoAOD-tools')
 args = parser.parse_args()
 
 run_data = {
@@ -33,22 +35,20 @@ run_data = {
 
 start_time = time.time()
 
-# do stuff..
 if args.framework == "TIMBER":
     bench = BenchTIMBER(args.tag, args.setname, args.year,
                         args.inputs, cutstring=args.cut)
-    mem_usage = memory_usage(bench.run_timber(), interval=1) # 1 sec intervals
-
+    mem_usage = memory_usage(bench.run_timber)
 elif args.framework == "NanoAODtools":
     bench = BenchNanoAODtools(args.tag, args.setname, args.year,
-                              args.inputs, cutstring=args.cut)
-    mem_usage = memory_usage(bench.run_nanoaodtools(), interval=1)
+                              args.inputs, cutstring=args.cut, kadfile=args.kad)
+    mem_usage = memory_usage(bench.run_nanoaodtools)
 
 run_data["process_time"] = time.time() - start_time
 run_data["process_maxmem"] = max(mem_usage)
 
 print (run_data)
-# db = BenchmarkDB()
-# db.CreateTable(sql_create_bench_table.format(args.framework))
-# db.CreateBenchmark("TIMBER",run_data)
-# db.connection.close()
+db = BenchmarkDB()
+db.CreateTable(sql_create_bench_table.format(args.framework))
+db.CreateBenchmark(args.framework,run_data)
+db.connection.close()
