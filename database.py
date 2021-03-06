@@ -34,11 +34,7 @@ def CreateConnection(db_file):
     return conn
 
 class BenchmarkDB:
-    def __init__(self,dbfile=None):
-        self.dbfile = dbfile
-        if dbfile == None:
-            self.dbfile = "TIMBERbench.db"
-
+    def __init__(self,dbfile="TIMBERbench.db"):
         self.connection = CreateConnection(dbfile)
         if self.connection is not None:
             self.CreateTable(sql_create_bench_table.format("TIMBER"))
