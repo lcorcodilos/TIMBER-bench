@@ -1,6 +1,7 @@
 import sqlite3, glob, datetime
 from sqlite3 import Error
 from sqlite3.dbapi2 import Cursor
+import pandas as pd
 
 sql_create_bench_table = '''
 CREATE TABLE IF NOT EXISTS {0}_benchmarks (
@@ -47,6 +48,24 @@ def CreateConnection(db_file):
     
     return conn
 
+def checkTagExists(cursor,FWname,tag):
+    '''Check that an entry with the given tag/conditions exists
+    in the table associated with FWname.
+
+    Args:
+        cursor (SQLite cursor): Associated with the connection to the database.
+        FWname (str): Framework name associated with the table we want.
+        tag (str): Tag/conditions.
+
+    Returns:
+        bool: Whether there's an entry for the given tag/conditions.
+    '''
+    select_str = "SELECT id FROM {0}_benchmarks WHERE conditions='{1}'"
+    cursor.execute(select_str.format(FWname,tag))
+    if len(cursor.fetchall()) > 0:
+        return True
+    else:
+        return False
 
 class BenchmarkDB:
     '''Class to organize access to the database storing benchmarking information.
