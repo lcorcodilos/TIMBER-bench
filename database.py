@@ -12,6 +12,14 @@ CREATE TABLE IF NOT EXISTS {0}_benchmarks (
     rootfile text
 );
 '''
+update_str = '''
+UPDATE {0}_benchmarks
+SET
+    timestamp = '{1}',
+    process_time = {2},
+    process_maxmem = {3}
+WHERE conditions='{4}'
+'''
 
 def GetTimeStamp():
     return str(datetime.datetime.now().replace(microsecond=0))
@@ -70,14 +78,18 @@ class BenchmarkDB:
         columns = self.GetColumnNames(frameworkname)
         bench_entry = tuple([valdict[col] for col in columns])
         sql_cursor = self.connection.cursor()
-        sql_insert = '''INSERT INTO %s_benchmarks(%s) VALUES(%s)'''%(
-            frameworkname,
-            ','.join([col for col in columns]),
-            ','.join(['?' for i in columns])
-        )
-        sql_cursor.execute(sql_insert,bench_entry)
-        self.connection.commit()
-        return sql_cursor.lastrowid # used to connect tables
+        if checkTagExists(sql_cursor,frameworkname,valdict['conditions']):
+            out = self.UpdateBenchmark(frameworkname,valdict) 
+        else:
+            sql_insert = '''INSERT INTO %s_benchmarks(%s) VALUES(%s)'''%(
+                frameworkname,
+                ','.join([col for col in columns]),
+                ','.join(['?' for i in columns])
+            )
+            sql_cursor.execute(sql_insert,bench_entry)
+            self.connection.commit()
+            out = sql_cursor.lastrowid # used to connect tables
+        return out
 
     def GetColumnNames(self,FWname):
         '''Get all column names in the current connection.
@@ -94,8 +106,23 @@ class BenchmarkDB:
 
     def PrintTable(self,FWname):
         sql_cursor = self.connection.cursor()
-        sql_cursor.execute("SELECT * FROM %s_benchmarks"%FWname)
-        print(sql_cursor.fetchall())
+    def UpdateBenchmark(self, FWname, valdict):
+        '''Updates a benchmark entry in table FWname_benchmarks 
+        for a certain tag.
+
+        Args:
+            FWname (str): Framework for table name.
+            valdict (dict): Dictionary of entry values. Specifically needs the
+                "conditions" and "timestamp" key/value pairs.
+
+        Returns:
+            int: Last row id so that tables can be connected.
+        '''
+        sql_cursor = self.connection.cursor()
+        print (update_str.format(FWname, valdict['timestamp'], valdict['process_time'],valdict['process_maxmem'], valdict['conditions']))
+        sql_cursor.execute(update_str.format(FWname, valdict['timestamp'], valdict['process_time'],valdict['process_maxmem'], valdict['conditions']))
+        self.connection.commit()
+        return sql_cursor.lastrowid
 
     def ReadBenchmark(self):
         pass
