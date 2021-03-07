@@ -205,7 +205,7 @@ class BenchmarkDB:
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description='Options to modify a TIMBERbench database.')
-    parser.add_argument('mode',nargs="*", help="Mode to run")
+    parser.add_argument('mode',nargs="*", help="Mode to run. Possibilities are `print` and `erase`.")
     parser.add_argument('-i', '--db', metavar='DATABASE', 
                         dest='dbname', 
                         default='TIMBERbench.db',
@@ -215,7 +215,7 @@ if __name__ == '__main__':
                     default='TIMBER',
                     help='Framework workflow to run')
     parser.add_argument('-t', '--tag', metavar='IN', 
-                    dest='tag', required=True,
+                    dest='tag', default=None,
                     help='Identifying conditions to allow comparisons across frameworks')
     args = parser.parse_args()
 
@@ -229,6 +229,9 @@ if __name__ == '__main__':
     db = BenchmarkDB(args.dbname)
 
     if mode == 'print':
-        db.PrintTable(args.framework)
-    elif mode == 'drop':
+        if args.tag == None:
+            db.PrintTable(args.framework)
+        else:
+            db.PrintBenchmark(args.framework,args.tag)
+    elif mode == 'erase':
         db.EraseBenchmark(args.framework,args.tag)

@@ -1,2 +1,6 @@
 test*.db
 *.pyc
+.vscode*
+*.dat
+*.db
+*.root
