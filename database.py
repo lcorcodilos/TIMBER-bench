@@ -22,6 +22,11 @@ WHERE conditions='{4}'
 '''
 
 def GetTimeStamp():
+    '''Return a string timestamp (date and time to the second).
+
+    Returns:
+        str: Timestamp
+    '''
     return str(datetime.datetime.now().replace(microsecond=0))
 
 def CreateConnection(db_file):
@@ -42,17 +47,27 @@ def CreateConnection(db_file):
     
     return conn
 
+
 class BenchmarkDB:
+    '''Class to organize access to the database storing benchmarking information.
+    '''
     def __init__(self,dbfile="TIMBERbench.db"):
+        '''Initializer
+
+        Args:
+            dbfile (str, optional): Database name. Defaults to "TIMBERbench.db".
+                Will be created if it does not exist. Will be opened otherwise.
+                Delete it via the CLI to start over.
+        '''
         self.connection = CreateConnection(dbfile)
         if self.connection is not None:
             self.CreateTable(sql_create_bench_table.format("TIMBER"))
 
     def CreateTable(self,create_table_sql):
-        '''Create a table from the create_table_sql statement
+        '''Create a table from the create_table_sql statement.
 
         Args:
-            create_table_sql (str): SQL string to create table
+            create_table_sql (str): SQL string to create table.
         
         Returns:
             None
@@ -64,8 +79,9 @@ class BenchmarkDB:
             print("CreateTable error %s"%e)
 
     def CreateBenchmark(self,frameworkname,valdict):
-        '''Create an benchmark entry for a given framework (TIMBER or other).
-        Row entries are given by valdict (keys are columns).
+        '''Create a benchmark entry for a given framework (TIMBER or other).
+        Row entries are given by valdict (keys are columns). Will instead UpdateBenchmark
+        if entry with tag already exists.
 
         Args:
             frameworkname (str): Name of "framework" being benchmarked (ex. "TIMBER").
