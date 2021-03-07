@@ -8,6 +8,10 @@ parser.add_argument('-f', '--framework', metavar='FRAMEWORK',
                     dest='framework', choices=['TIMBER','NanoAODtools'],
                     default='TIMBER',
                     help='Framework workflow to run')
+parser.add_argument('-i', '--db', metavar='DATABASE', 
+                    dest='dbname', 
+                    default='TIMBERbench.db',
+                    help='SQLite database file to open')
 parser.add_argument('inputs',nargs="*", help="Files to provide as input")
 parser.add_argument('-s', '--setname', metavar='SET', 
                     dest='setname', required=True,
@@ -24,6 +28,9 @@ parser.add_argument('-c', '--cut', metavar='IN',
 parser.add_argument('--kad', metavar='IN', 
                     dest='kad', default='',
                     help='"Keep and drop" file for NanoAOD-tools')
+parser.add_argument('--dry-run', action='store_true',
+                    dest='dryrun', default=False,
+                    help='Dry-run will not save to database')
 args = parser.parse_args()
 
 run_data = {
@@ -50,7 +57,8 @@ run_data["process_maxmem"] = max(mem_usage)
 run_data["rootfile"] = bench.outfilename
 
 print (run_data)
-db = BenchmarkDB()
-db.CreateTable(sql_create_bench_table.format(args.framework))
-db.CreateBenchmark(args.framework,run_data)
-db.connection.close()
+if args.dryrun:
+    db = BenchmarkDB(args.dbname)
+    db.CreateTable(sql_create_bench_table.format(args.framework))
+    db.CreateBenchmark(args.framework,run_data)
+    db.connection.close()
