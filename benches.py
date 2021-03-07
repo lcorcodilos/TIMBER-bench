@@ -62,7 +62,7 @@ class BenchNanoAODtools(Bench):
                         outputbranchsel=self.kad_file,
                         modules=self.mymodules,
                         provenance=True,haddFileName=hadded_file)
-            out = output_dir+hadded_file
+            self.outfilename = output_dir+hadded_file
         else:
             p=PostProcessor(output_dir,self.filenames,
                         self.cutstring,
@@ -70,10 +70,9 @@ class BenchNanoAODtools(Bench):
                         outputbranchsel=self.kad_file,
                         modules=self.mymodules,
                         provenance=True)
-            out = output_dir+self.filenames[0]
+            self.outfilename = output_dir+self.filenames[0]
 
         p.run()
-        return out
 
 class BenchTIMBER(Bench):
     def __init__(self,tag,setname,year,filenames,cutstring=''):
@@ -95,8 +94,10 @@ class BenchTIMBER(Bench):
         self.a.CalibrateVar(["FatJet_pt","FatJet_msoftdrop"],jer,evalArgs={"jets":"FatJets","genJets":"GenJets"})
         self.a.CalibrateVar(["FatJet_msoftdrop"],jms,evalArgs={"nJets":"nFatJet"})
         self.a.CalibrateVar(["FatJet_msoftdrop"],jmr,evalArgs={"jets":"FatJets","genJets":"GenJets"})
+
+        self.outfilename = 'benchmark_out/TIMBER_'+self.tag+'.root'
     
     def run_timber(self):
-        self.a.Snapshot(['nFatJet','FatJet_.*'],'benchmark_out/TIMBER_'+self.tag+'.root',"Events")
+        self.a.Snapshot(['nFatJet','FatJet_.*'],self.outfilename,"Events")
         print ('Finished snapshot')
         

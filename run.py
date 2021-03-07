@@ -31,6 +31,7 @@ run_data = {
     "conditions":args.tag,
     "process_time":None,
     "process_maxmem":None,
+    "rootfile":None
 }
 
 start_time = time.time()
@@ -46,6 +47,7 @@ elif args.framework == "NanoAODtools":
 
 run_data["process_time"] = time.time() - start_time
 run_data["process_maxmem"] = max(mem_usage)
+run_data["rootfile"] = bench.outfilename
 
 print (run_data)
 db = BenchmarkDB()

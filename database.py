@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS {0}_benchmarks (
     timestamp text NOT NULL,
     conditions text,
     process_time float,
-    process_maxmem float
+    process_maxmem float,
+    rootfile text
 );
 '''
 
