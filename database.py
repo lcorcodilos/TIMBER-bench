@@ -202,6 +202,33 @@ class BenchmarkDB:
         sql_cursor.execute(erase_str.format(FWname,tag))
         self.connection.commit()
 
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description='Options to modify a TIMBERbench database.')
+    parser.add_argument('mode',nargs="*", help="Mode to run")
+    parser.add_argument('-i', '--db', metavar='DATABASE', 
+                        dest='dbname', 
+                        default='TIMBERbench.db',
+                        help='SQLite database file to open')
+    parser.add_argument('-f', '--framework', metavar='FRAMEWORK', 
+                    dest='framework', choices=['TIMBER','NanoAODtools'],
+                    default='TIMBER',
+                    help='Framework workflow to run')
+    parser.add_argument('-t', '--tag', metavar='IN', 
+                    dest='tag', required=True,
+                    help='Identifying conditions to allow comparisons across frameworks')
+    args = parser.parse_args()
 
-    def EditBenchmark(self):
-        pass
+    possible_modes = ['print']
+
+    if len(args.mode) == 0: raise ValueError('No mode provided. Available modes are %s'%(''.join(possible_modes)))
+    elif len(args.mode) > 1: print ('WARNING: Multiple modes specified (). Only the first is taken ().'%(''.join(args.mode),args.mode[0]))
+    mode = args.mode[0]
+    if mode not in possible_modes: raise ValueError('Provided mode (%s) not accepted. Available modes are %s'(mode,''.join(possible_modes)))
+
+    db = BenchmarkDB(args.dbname)
+
+    if mode == 'print':
+        db.PrintTable(args.framework)
+    elif mode == 'drop':
+        db.EraseBenchmark(args.framework,args.tag)
