@@ -123,9 +123,20 @@ class BenchmarkDB:
         sql_cursor.execute(update_str.format(FWname, valdict['timestamp'], valdict['process_time'],valdict['process_maxmem'], valdict['conditions']))
         self.connection.commit()
         return sql_cursor.lastrowid
+        
+    def EraseBenchmark(self, FWname, tag):
+        '''Erase a benchmark entry in table FWname_benchmarks 
+        for a certain tag.
 
-    def ReadBenchmark(self):
-        pass
+        Args:
+            FWname (str): Framework name.
+            tag (str): Tag/conditions.
+        '''
+        erase_str = "DELETE FROM {0}_benchmarks WHERE conditions='{1}'"
+        sql_cursor = self.connection.cursor()
+        sql_cursor.execute(erase_str.format(FWname,tag))
+        self.connection.commit()
+
 
     def EditBenchmark(self):
         pass
