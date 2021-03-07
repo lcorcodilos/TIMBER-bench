@@ -18,8 +18,9 @@ UPDATE {0}_benchmarks
 SET
     timestamp = '{1}',
     process_time = {2},
-    process_maxmem = {3}
-WHERE conditions='{4}'
+    process_maxmem = {3},
+    rootfile = '{4}'
+WHERE conditions='{5}'
 '''
 
 def GetTimeStamp():
@@ -184,8 +185,7 @@ class BenchmarkDB:
             int: Last row id so that tables can be connected.
         '''
         sql_cursor = self.connection.cursor()
-        print (update_str.format(FWname, valdict['timestamp'], valdict['process_time'],valdict['process_maxmem'], valdict['conditions']))
-        sql_cursor.execute(update_str.format(FWname, valdict['timestamp'], valdict['process_time'],valdict['process_maxmem'], valdict['conditions']))
+        sql_cursor.execute(update_str.format(FWname, valdict['timestamp'], valdict['process_time'],valdict['process_maxmem'],valdict['rootfile'], valdict['conditions']))
         self.connection.commit()
         return sql_cursor.lastrowid
         
