@@ -105,7 +105,37 @@ class BenchmarkDB:
         return [descrip[0] for descrip in query if 'id' not in descrip]
 
     def PrintTable(self,FWname):
+        '''Print the table for a given framework (FWname).
+
+        Args:
+            FWname (str): Framework name.
+        '''
+        print (pd.read_sql_query("SELECT * FROM %s_benchmarks"%FWname,self.connection))
+
+    def PrintBenchmark(self, FWname, tag):
+        '''Print a benchmark for a specific framework and tag.
+
+        Args:
+            FWname (str): Framework name.
+            tag (str): Tag/conditions.
+        '''
+        print (pd.read_sql_query("SELECT * FROM %s_benchmarks WHERE conditions='%s'"%(FWname,tag),self.connection))
+
+    def ReadBenchmark(self,FWname, tag):
+        '''Return a specific benchmark.
+
+        Args:
+            FWname (str): Framework name.
+            tag (str): Tag/conditions.
+
+        Returns:
+            [type]: [description]
+        '''
         sql_cursor = self.connection.cursor()
+        sql_cursor.execute("SELECT * FROM {0}_benchmarks WHERE conditions='{1}'".format(FWname,tag))
+        out = sql_cursor.fetchone()
+        return out
+
     def UpdateBenchmark(self, FWname, valdict):
         '''Updates a benchmark entry in table FWname_benchmarks 
         for a certain tag.
