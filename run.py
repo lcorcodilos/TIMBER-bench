@@ -57,7 +57,7 @@ run_data["process_maxmem"] = max(mem_usage)
 run_data["rootfile"] = bench.outfilename
 
 print (run_data)
-if args.dryrun:
+if not args.dryrun:
     db = BenchmarkDB(args.dbname)
     db.CreateTable(sql_create_bench_table.format(args.framework))
     db.CreateBenchmark(args.framework,run_data)
