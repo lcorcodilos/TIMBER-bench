@@ -90,14 +90,18 @@ class BenchTIMBER(Bench):
         self.a = analyzer(self.filenames)
         if cutstring != '':
             self.a.Cut("cutstring",cutstring)
-        self.a.CalibrateVar(["FatJet_pt","FatJet_msoftdrop"],jes,evalArgs={"jets":"FatJets","rho":"fixedGridRhoFastjetAll"})
-        self.a.CalibrateVar(["FatJet_pt","FatJet_msoftdrop"],jer,evalArgs={"jets":"FatJets","genJets":"GenJets"})
-        self.a.CalibrateVar(["FatJet_msoftdrop"],jms,evalArgs={"nJets":"nFatJet"})
-        self.a.CalibrateVar(["FatJet_msoftdrop"],jmr,evalArgs={"jets":"FatJets","genJets":"GenJets"})
+        calibdict = {"FatJet_pt":[jes,jer],"FatJet_msoftdrop":[jes,jer,jms,jmr]}
+        evalargs = {
+            jes: {"jets":"FatJets","rho":"fixedGridRhoFastjetAll"},
+            jer: {"jets":"FatJets","genJets":"GenJets"},
+            jms: {"nJets":"nFatJet"},
+            jmr: {"jets":"FatJets","genJets":"GenJets"}
+        }
+        self.a.CalibrateVars(calibdict,evalargs,"CalibratedFatJet")
 
         self.outfilename = 'benchmark_out/TIMBER_'+self.tag+'.root'
     
     def run_timber(self):
-        self.a.Snapshot(['nFatJet','FatJet_.*'],self.outfilename,"Events")
+        self.a.Snapshot(['nCalibratedFatJet','CalibratedFatJet_.*','J.*_(nom|up|down)'],self.outfilename,"Events")
         print ('Finished snapshot')
         
