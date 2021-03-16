@@ -7,7 +7,7 @@ from PhysicsTools.NanoAODTools.postprocessing.modules.common.PrefireCorr import 
 
 from TIMBER.Analyzer import analyzer, Calibration
 from TIMBER.Tools.Common import GetJMETag
-import glob, os
+import glob, os, subprocess
 
 PrefCorr_2016 = lambda : PrefCorr(jetroot='L1prefiring_jetpt_2016BtoH.root',
                             jetmapname='L1prefiring_jetpt_2016BtoH',
@@ -38,7 +38,7 @@ class BenchNanoAODtools(Bench):
         self.jettype = "AK8PFPuppi"
         self.corrector = createJMECorrector(
                             self.isMC, self.year, self.period,
-                            self.jesUncertainty, self.jettype,)
+                            self.jesUncertainty, self.jettype,applySmearing=True)
 
         self.mymodules = [self.corrector()]
         # if not self.isMC:
@@ -55,22 +55,24 @@ class BenchNanoAODtools(Bench):
         output_dir = 'benchmark_out/'
         hadded_file = 'NanoAODtools_'+self.tag+'.root'
         # Postprocessor
-        if len(self.filenames) > 1:
-            p=PostProcessor(output_dir,self.filenames,
-                        self.cutstring,
-                        branchsel="keep_all.txt",
-                        outputbranchsel=self.kad_file,
-                        modules=self.mymodules,
-                        provenance=True,haddFileName=hadded_file)
-            self.outfilename = output_dir+hadded_file
-        else:
-            p=PostProcessor(output_dir,self.filenames,
-                        self.cutstring,
-                        branchsel="keep_all.txt",
-                        outputbranchsel=self.kad_file,
-                        modules=self.mymodules,
-                        provenance=True)
-            self.outfilename = output_dir+self.filenames[0]
+        # if len(self.filenames) > 1:
+        p=PostProcessor(output_dir,self.filenames,
+                    self.cutstring,
+                    branchsel="keep_all.txt",
+                    outputbranchsel=self.kad_file,
+                    modules=self.mymodules,
+                    provenance=True,haddFileName=hadded_file)
+        
+        self.outfilename = output_dir+hadded_file
+        subprocess.call(["mv %s %s"%(hadded_file,self.outfilename)],shell=True)
+        # else:
+        #     p=PostProcessor(output_dir,self.filenames,
+        #                 self.cutstring,
+        #                 branchsel="keep_all.txt",
+        #                 outputbranchsel=self.kad_file,
+        #                 modules=self.mymodules,
+        #                 provenance=True)
+        #     self.outfilename = output_dir+self.filenames[0]
 
         p.run()
 
