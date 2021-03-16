@@ -61,11 +61,29 @@ if __name__ == "__main__":
 
     vars_to_comp = {
         "pt":{"TIMBER":"CalibratedFatJet_pt","NanoAODtools":"FatJet_pt_nom"},
-        "mass":{"TIMBER":"CalibratedFatJet_msoftdrop","NanoAODtools":"FatJet_msoftdrop_nom"}
+        "mass":{"TIMBER":"CalibratedFatJet_mass","NanoAODtools":"FatJet_mass_nom"},
+        "JES":{"TIMBER":"JES_nom","NanoAODtools":"FatJet_corr_JEC"},
+        "pt_JESUp":{"TIMBER":"CalibratedFatJet_pt_JES__up","NanoAODtools":"FatJet_pt_jesTotalUp"},
+        "pt_JESDown":{"TIMBER":"CalibratedFatJet_pt_JES__down","NanoAODtools":"FatJet_pt_jesTotalDown"},
+        "pt_JERUp":{"TIMBER":"CalibratedFatJet_pt_JER__up","NanoAODtools":"FatJet_pt_jerUp"},
+        "pt_JERDown":{"TIMBER":"CalibratedFatJet_pt_JER__down","NanoAODtools":"FatJet_pt_jerDown"},
+        "mass_JESUp":{"TIMBER":"CalibratedFatJet_mass_JES__up","NanoAODtools":"FatJet_mass_jesTotalUp"},
+        "mass_JESDown":{"TIMBER":"CalibratedFatJet_mass_JES__down","NanoAODtools":"FatJet_mass_jesTotalDown"},
+        "mass_JERUp":{"TIMBER":"CalibratedFatJet_mass_JER__up","NanoAODtools":"FatJet_mass_jerUp"},
+        "mass_JERDown":{"TIMBER":"CalibratedFatJet_mass_JER__down","NanoAODtools":"FatJet_mass_jerDown"},
+        "mass_JMRUp":{"TIMBER":"CalibratedFatJet_mass_JMR__up","NanoAODtools":"FatJet_mass_jmrUp"},
+        "mass_JMRDown":{"TIMBER":"CalibratedFatJet_mass_JMR__down","NanoAODtools":"FatJet_mass_jmrDown"},
+        "mass_JMSUp":{"TIMBER":"CalibratedFatJet_mass_JMS__up","NanoAODtools":"FatJet_mass_jmsUp"},
+        "mass_JMSDown":{"TIMBER":"CalibratedFatJet_mass_JMS__down","NanoAODtools":"FatJet_mass_jmsDown"},
+        "JER":{"TIMBER":"JER_nom","NanoAODtools":"FatJet_corr_JER"},
+        "JMS":{"TIMBER":"JMS_nom","NanoAODtools":"FatJet_corr_JMS"},
+        "JMR":{"TIMBER":"JMR_nom","NanoAODtools":"FatJet_corr_JMR"}
     }
 
     for v in vars_to_comp.keys():
-        vars_to_comp[v]["hist"] = ROOT.TH1F('%s_comp'%v,'TIMBER - NanoAODtools',200,-50,50)
+        # if 'JE' not in v and 'JM' not in v:
+        vars_to_comp[v]["hist"] = ROOT.TH1F('%s_comp'%v,'TIMBER - NanoAODtools',200,-0.5,0.5)
+        # else: vars_to_comp[v]["hist"] = ROOT.TH2F('%s_comp'%v,'TIMBER - NanoAODtools',200,-,0.6,200,0,400)
         vars_to_comp[v]["hist"].GetXaxis().SetTitle(v)
 
     for i,ientry in enumerate(randrange):
@@ -83,7 +101,7 @@ if __name__ == "__main__":
             for v in vars_to_comp.keys():
                 timberval = getattr(inputs['TIMBER']['tree'],"%s"%vars_to_comp[v]["TIMBER"])[0]
                 nanoval = getattr(inputs['NanoAODtools']['tree'],"%s"%vars_to_comp[v]["NanoAODtools"])[0]
-                vars_to_comp[v]['hist'].Fill(timberval-nanoval)
+                vars_to_comp[v]['hist'].Fill((timberval-nanoval)/nanoval)
     fout.cd()
     for v in vars_to_comp.keys():
         vars_to_comp[v]['hist'].Write()
