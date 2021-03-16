@@ -1,4 +1,5 @@
 import argparse, time
+from TIMBER.Tools.Common import OpenJSON
 from memory_profiler import memory_usage
 from database import *
 from benches import BenchNanoAODtools, BenchTIMBER
@@ -14,13 +15,13 @@ parser.add_argument('-i', '--db', metavar='DATABASE',
                     help='SQLite database file to open')
 parser.add_argument('inputs',nargs="*", help="Files to provide as input")
 parser.add_argument('-s', '--setname', metavar='SET', 
-                    dest='setname', required=True,
+                    dest='setname', required=False,
                     help='MC or data setname')
 parser.add_argument('-y', '--year', metavar='YEAR', 
-                    dest='year', required=True,
+                    dest='year', required=False,
                     help='Processing year')
 parser.add_argument('-t', '--tag', metavar='IN', 
-                    dest='tag', required=True,
+                    dest='tag', required=False,
                     help='Identifying conditions to allow comparisons across frameworks')
 parser.add_argument('-c', '--cut', metavar='IN', 
                     dest='cut', default='',
@@ -28,10 +29,19 @@ parser.add_argument('-c', '--cut', metavar='IN',
 parser.add_argument('--kad', metavar='IN', 
                     dest='kad', default='',
                     help='"Keep and drop" file for NanoAOD-tools')
+parser.add_argument('--payload', metavar='IN', 
+                    dest='payload', default='',
+                    help='Payload which bypasses other command line options')
 parser.add_argument('--dry-run', action='store_true',
                     dest='dryrun', default=False,
                     help='Dry-run will not save to database')
 args = parser.parse_args()
+
+if args.payload != '':
+    payload = OpenJSON(args.payload)
+    for o in payload.keys():
+        if hasattr(args,o):
+            setattr(args,o,payload[o])
 
 run_data = {
     "timestamp":GetTimeStamp(),

@@ -1,0 +1,7 @@
+{
+    "inputs": ["payloads/ttbarAllHad_2018_locs.txt"],
+    "setname": "ttbar",
+    "year": "2018",
+    "tag": "fullJME_ttbar2018_fullXRD_FatJetOnly",
+    "kad": "fatjetonly_keep.txt"
+}

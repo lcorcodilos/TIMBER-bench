@@ -1,0 +1,7 @@
+{
+    "inputs": ["ttbar16_test.root"],
+    "setname": "ttbar",
+    "year": "2016",
+    "tag": "fullJME_ttbar2016_singleFile_FatJetOnly",
+    "kad": "fatjetonly_keep.txt"
+}

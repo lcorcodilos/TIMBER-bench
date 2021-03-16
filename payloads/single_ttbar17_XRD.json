@@ -1,0 +1,7 @@
+{
+    "inputs": ["root://cmsxrootd.fnal.gov//store/mc/RunIIFall17NanoAODv6/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/PU2017_12Apr2018_Nano25Oct2019_102X_mc2017_realistic_v7_ext1-v1/100000/0C8C9799-4052-0E42-B5BC-8548B2588B40.root"],
+    "setname": "ttbar",
+    "year": "2017",
+    "tag": "fullJME_ttbar2017_singleFileXRD_FatJetOnly",
+    "kad": "fatjetonly_keep.txt"
+}

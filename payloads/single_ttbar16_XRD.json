@@ -1,0 +1,7 @@
+{
+    "inputs": ["root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv6/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/NANOAODSIM/PUMoriond17_Nano25Oct2019_102X_mcRun2_asymptotic_v7-v2/20000/28198C48-2BF4-CE4E-BD80-FFAB4BEB1AAA.root"],
+    "setname": "ttbar",
+    "year": "2016",
+    "tag": "fullJME_ttbar2016_singleFileXRD_FatJetOnly",
+    "kad": "fatjetonly_keep.txt"
+}
