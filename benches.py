@@ -90,12 +90,12 @@ class BenchTIMBER(Bench):
         self.a = analyzer(self.filenames)
         if cutstring != '':
             self.a.Cut("cutstring",cutstring)
-        calibdict = {"FatJet_pt":[jes,jer],"FatJet_msoftdrop":[jes,jer,jms,jmr]}
+        calibdict = {"FatJet_pt":[jes,jer],"FatJet_mass":[jes,jer,jms,jmr]}
         evalargs = {
             jes: {"jets":"FatJets","rho":"fixedGridRhoFastjetAll"},
-            jer: {"jets":"FatJets","genJets":"GenJets"},
+            jer: {"jets":"FatJets","genJets":"GenJetAK8s"},
             jms: {"nJets":"nFatJet"},
-            jmr: {"jets":"FatJets","genJets":"GenJets"}
+            jmr: {"jets":"FatJets","genJets":"GenJetAK8s"}
         }
         self.a.CalibrateVars(calibdict,evalargs,"CalibratedFatJet")
 
