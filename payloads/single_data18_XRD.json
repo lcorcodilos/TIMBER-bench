@@ -1,0 +1,7 @@
+{
+    "inputs": ["root://cmsxrootd.fnal.gov//store/data/Run2018C/JetHT/NANOAOD/Nano25Oct2019-v2/230000/E0209975-0456-BE40-AB11-B3E8369FBF89.root"],
+    "setname": "dataC",
+    "year": "2018",
+    "tag": "fullJME_dataC2018_singleFileXRD_FatJetOnly",
+    "kad": "fatjetonly_keep.txt"
+}
