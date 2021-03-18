@@ -28,6 +28,10 @@ if __name__ == "__main__":
                         dest='dbname', 
                         default='TIMBERbench.db',
                         help='SQLite database file to open')
+    parser.add_argument('--data', action='store_true',
+                        dest='isData',
+                        default=False,
+                        help='Is data')
     args = parser.parse_args()
 
     db = BenchmarkDB(args.dbname)
@@ -62,23 +66,24 @@ if __name__ == "__main__":
     vars_to_comp = {
         "pt":{"TIMBER":"CalibratedFatJet_pt","NanoAODtools":"FatJet_pt_nom"},
         "mass":{"TIMBER":"CalibratedFatJet_mass","NanoAODtools":"FatJet_mass_nom"},
-        "JES":{"TIMBER":"JES_nom","NanoAODtools":"FatJet_corr_JEC"},
-        "pt_JESUp":{"TIMBER":"CalibratedFatJet_pt_JES__up","NanoAODtools":"FatJet_pt_jesTotalUp"},
-        "pt_JESDown":{"TIMBER":"CalibratedFatJet_pt_JES__down","NanoAODtools":"FatJet_pt_jesTotalDown"},
-        "pt_JERUp":{"TIMBER":"CalibratedFatJet_pt_JER__up","NanoAODtools":"FatJet_pt_jerUp"},
-        "pt_JERDown":{"TIMBER":"CalibratedFatJet_pt_JER__down","NanoAODtools":"FatJet_pt_jerDown"},
-        "mass_JESUp":{"TIMBER":"CalibratedFatJet_mass_JES__up","NanoAODtools":"FatJet_mass_jesTotalUp"},
-        "mass_JESDown":{"TIMBER":"CalibratedFatJet_mass_JES__down","NanoAODtools":"FatJet_mass_jesTotalDown"},
-        "mass_JERUp":{"TIMBER":"CalibratedFatJet_mass_JER__up","NanoAODtools":"FatJet_mass_jerUp"},
-        "mass_JERDown":{"TIMBER":"CalibratedFatJet_mass_JER__down","NanoAODtools":"FatJet_mass_jerDown"},
-        "mass_JMRUp":{"TIMBER":"CalibratedFatJet_mass_JMR__up","NanoAODtools":"FatJet_mass_jmrUp"},
-        "mass_JMRDown":{"TIMBER":"CalibratedFatJet_mass_JMR__down","NanoAODtools":"FatJet_mass_jmrDown"},
-        "mass_JMSUp":{"TIMBER":"CalibratedFatJet_mass_JMS__up","NanoAODtools":"FatJet_mass_jmsUp"},
-        "mass_JMSDown":{"TIMBER":"CalibratedFatJet_mass_JMS__down","NanoAODtools":"FatJet_mass_jmsDown"},
-        "JER":{"TIMBER":"JER_nom","NanoAODtools":"FatJet_corr_JER"},
-        "JMS":{"TIMBER":"JMS_nom","NanoAODtools":"FatJet_corr_JMS"},
-        "JMR":{"TIMBER":"JMR_nom","NanoAODtools":"FatJet_corr_JMR"}
+        "JES":{"TIMBER":"JES_nom","NanoAODtools":"FatJet_corr_JEC"}
     }
+    if not args.isData:
+        vars_to_comp["pt_JESUp"] = {"TIMBER":"CalibratedFatJet_pt_JES__up","NanoAODtools":"FatJet_pt_jesTotalUp"}
+        vars_to_comp["pt_JESDown"] = {"TIMBER":"CalibratedFatJet_pt_JES__down","NanoAODtools":"FatJet_pt_jesTotalDown"}
+        vars_to_comp["pt_JERUp"] = {"TIMBER":"CalibratedFatJet_pt_JER__up","NanoAODtools":"FatJet_pt_jerUp"}
+        vars_to_comp["pt_JERDown"] = {"TIMBER":"CalibratedFatJet_pt_JER__down","NanoAODtools":"FatJet_pt_jerDown"}
+        vars_to_comp["mass_JESUp"] = {"TIMBER":"CalibratedFatJet_mass_JES__up","NanoAODtools":"FatJet_mass_jesTotalUp"}
+        vars_to_comp["mass_JESDown"] = {"TIMBER":"CalibratedFatJet_mass_JES__down","NanoAODtools":"FatJet_mass_jesTotalDown"}
+        vars_to_comp["mass_JERUp"] = {"TIMBER":"CalibratedFatJet_mass_JER__up","NanoAODtools":"FatJet_mass_jerUp"}
+        vars_to_comp["mass_JERDown"] = {"TIMBER":"CalibratedFatJet_mass_JER__down","NanoAODtools":"FatJet_mass_jerDown"}
+        vars_to_comp["mass_JMRUp"] = {"TIMBER":"CalibratedFatJet_mass_JMR__up","NanoAODtools":"FatJet_mass_jmrUp"}
+        vars_to_comp["mass_JMRDown"] = {"TIMBER":"CalibratedFatJet_mass_JMR__down","NanoAODtools":"FatJet_mass_jmrDown"}
+        vars_to_comp["mass_JMSUp"] = {"TIMBER":"CalibratedFatJet_mass_JMS__up","NanoAODtools":"FatJet_mass_jmsUp"}
+        vars_to_comp["mass_JMSDown"] = {"TIMBER":"CalibratedFatJet_mass_JMS__down","NanoAODtools":"FatJet_mass_jmsDown"}
+        vars_to_comp["JER"] = {"TIMBER":"JER_nom","NanoAODtools":"FatJet_corr_JER"}
+        vars_to_comp["JMS"] = {"TIMBER":"JMS_nom","NanoAODtools":"FatJet_corr_JMS"}
+        vars_to_comp["JMR"] = {"TIMBER":"JMR_nom","NanoAODtools":"FatJet_corr_JMR"}
 
     for v in vars_to_comp.keys():
         # if 'JE' not in v and 'JM' not in v:
@@ -98,10 +103,11 @@ if __name__ == "__main__":
             #     inputs[frame]["FatJetColl"] = Collection(inputs[frame]["event"], "FatJet")
 
         if inputs['TIMBER']['tree'].nCalibratedFatJet > 0:
+            ijet = random.randrange(0,inputs['TIMBER']['tree'].nCalibratedFatJet)
             for v in vars_to_comp.keys():
-                timberval = getattr(inputs['TIMBER']['tree'],"%s"%vars_to_comp[v]["TIMBER"])[0]
-                nanoval = getattr(inputs['NanoAODtools']['tree'],"%s"%vars_to_comp[v]["NanoAODtools"])[0]
-                vars_to_comp[v]['hist'].Fill((timberval-nanoval)/nanoval)
+                timberval = getattr(inputs['TIMBER']['tree'],"%s"%vars_to_comp[v]["TIMBER"])[ijet]
+                nanoval = getattr(inputs['NanoAODtools']['tree'],"%s"%vars_to_comp[v]["NanoAODtools"])[ijet]
+                vars_to_comp[v]['hist'].Fill((timberval-nanoval))
     fout.cd()
     for v in vars_to_comp.keys():
         vars_to_comp[v]['hist'].Write()

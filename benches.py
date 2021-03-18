@@ -64,7 +64,6 @@ class BenchNanoAODtools(Bench):
                     provenance=True,haddFileName=hadded_file)
         
         self.outfilename = output_dir+hadded_file
-        subprocess.call(["mv %s %s"%(hadded_file,self.outfilename)],shell=True)
         # else:
         #     p=PostProcessor(output_dir,self.filenames,
         #                 self.cutstring,
@@ -75,31 +74,43 @@ class BenchNanoAODtools(Bench):
         #     self.outfilename = output_dir+self.filenames[0]
 
         p.run()
+        subprocess.call(["mv %s %s"%(hadded_file,self.outfilename)],shell=True)
 
 class BenchTIMBER(Bench):
     def __init__(self,tag,setname,year,filenames,cutstring=''):
         super(BenchTIMBER,self).__init__(tag,setname,year,filenames,cutstring='')
 
-        jes = Calibration("JES","TIMBER/Framework/include/JES_weight.h",
-                [GetJMETag("JES",str(year),"MC"),"AK8PFPuppi","","true"], corrtype="Calibration")
-        jer = Calibration("JER","TIMBER/Framework/include/JER_weight.h",
-                [GetJMETag("JER",str(year),"MC"),"AK8PFPuppi"], corrtype="Calibration")
-        jms = Calibration("JMS","TIMBER/Framework/include/JMS_weight.h",
-                [str(year)], corrtype="Calibration")
-        jmr = Calibration("JMR","TIMBER/Framework/include/JMR_weight.h",
-                [str(year)], corrtype="Calibration")
-        
         self.a = analyzer(self.filenames)
         if cutstring != '':
             self.a.Cut("cutstring",cutstring)
-        calibdict = {"FatJet_pt":[jes,jer],"FatJet_mass":[jes,jer,jms,jmr]}
-        evalargs = {
-            jes: {"jets":"FatJets","rho":"fixedGridRhoFastjetAll"},
-            jer: {"jets":"FatJets","genJets":"GenJetAK8s"},
-            jms: {"nJets":"nFatJet"},
-            jmr: {"jets":"FatJets","genJets":"GenJetAK8s"}
-        }
-        self.a.CalibrateVars(calibdict,evalargs,"CalibratedFatJet")
+
+        if not self.a.isData:
+            jes = Calibration("JES","TIMBER/Framework/include/JES_weight.h",
+                    [GetJMETag("JES",str(year),"MC"),"AK8PFPuppi","","true"], corrtype="Calibration")
+            jer = Calibration("JER","TIMBER/Framework/include/JER_weight.h",
+                    [GetJMETag("JER",str(year),"MC"),"AK8PFPuppi"], corrtype="Calibration")
+            jms = Calibration("JMS","TIMBER/Framework/include/JMS_weight.h",
+                    [str(year)], corrtype="Calibration")
+            jmr = Calibration("JMR","TIMBER/Framework/include/JMR_weight.h",
+                    [str(year)], corrtype="Calibration")
+        else:
+            jes = Calibration("JES","TIMBER/Framework/include/JES_weight.h",
+                    [GetJMETag("JES",str(year),"C"),"AK8PFPuppi","","true"], corrtype="Calibration")
+
+        if not self.a.isData:
+            calibdict = {"FatJet_pt":[jes,jer],"FatJet_mass":[jes,jer,jms,jmr]}
+            evalargs = {
+                jes: {"jets":"FatJets","rho":"fixedGridRhoFastjetAll"},
+                jer: {"jets":"FatJets","genJets":"GenJetAK8s"},
+                jms: {"nJets":"nFatJet"},
+                jmr: {"jets":"FatJets","genJets":"GenJetAK8s"}
+            }
+        else:
+            calibdict = {"FatJet_pt":[jes],"FatJet_mass":[jes]}
+            evalargs = {
+                jes: {"jets":"FatJets","rho":"fixedGridRhoFastjetAll"}
+            }
+        self.a.CalibrateVars(calibdict,evalargs,"CalibratedFatJet",variationsFlag=self.isMC)
 
         self.outfilename = 'benchmark_out/TIMBER_'+self.tag+'.root'
     
